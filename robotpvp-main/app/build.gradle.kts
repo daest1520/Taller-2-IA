@@ -4,9 +4,15 @@ plugins {
 }
 
 android {
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
     namespace = "com.udistrital.robotpvp"
     compileSdk {
         version = release(37)
+
     }
 
     defaultConfig {
@@ -51,4 +57,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation("org.pytorch:pytorch_android_lite:1.13.0")
+    implementation("org.pytorch:pytorch_android_torchvision_lite:1.13.0")
 }
