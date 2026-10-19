@@ -1,0 +1,66 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="robotpvp" name="Agente extendido">
+    <mxGraphModel dx="980" dy="578" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="560" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="container" parent="1" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#F8F9FB;strokeColor=#8892A6;strokeWidth=2;dashed=1;dashPattern=8 4;verticalAlign=top;align=left;spacingLeft=16;spacingTop=6;fontSize=14;fontColor=#3B4256;" value="&lt;b&gt;AGENTE EXTENDIDO&lt;/b&gt; (Python → Android .ptl)" vertex="1">
+          <mxGeometry height="380" width="920" x="40" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="env" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#E8EAF0;strokeColor=#3B4256;strokeWidth=2;fontSize=13;fontColor=#1F2433;shadow=1;" value="&lt;b&gt;ENTORNO ROBOTPVP ANDROID / PROXY PYTHON&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;Estado s&lt;sub&gt;t&lt;/sub&gt;: coordenadas del robot y del rival&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="440" x="280" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="actor" parent="1" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=14;shadow=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" value="&lt;b&gt;ACTOR&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;Selecciona movimientos&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="220" x="70" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="motor" parent="1" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;fillColor=#647687;strokeColor=#314354;strokeWidth=2;fontSize=14;fontColor=#ffffff;shadow=1;" value="&lt;b&gt;Motor de Movimiento&lt;/b&gt;" vertex="1">
+          <mxGeometry height="90" width="220" x="390" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="critic" parent="1" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;fillColor=#647687;strokeColor=#314354;strokeWidth=2;fontSize=14;fontColor=#ffffff;shadow=1;" value="&lt;b&gt;CRÍTICO&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;Evalúa estados y acciones&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="220" x="70" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="reward" parent="1" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;fillColor=#647687;strokeColor=#314354;strokeWidth=2;fontSize=14;fontColor=#ffffff;shadow=1;" value="&lt;b&gt;Recompensa total&lt;/b&gt;&lt;br&gt;r&lt;sub&gt;t&lt;/sub&gt; = r&lt;sub&gt;e&lt;/sub&gt; + η · r&lt;sub&gt;i&lt;/sub&gt;" vertex="1">
+          <mxGeometry height="90" width="220" x="390" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="disc" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#647687;strokeColor=#314354;strokeWidth=2;fontSize=13;fontColor=#ffffff;align=left;spacingLeft=14;shadow=1;" value="&lt;b&gt;COMPONENTE DE DESCUBRIMIENTO&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Recibe (s&lt;sub&gt;t&lt;/sub&gt;, a&lt;sub&gt;t&lt;/sub&gt;)&lt;br&gt;&lt;br&gt;2. Predice φ̂(s&lt;sub&gt;t+1&lt;/sub&gt;)&lt;br&gt;&lt;br&gt;3. Error de predicción =&lt;br&gt;recompensa intrínseca r&lt;sub&gt;i&lt;/sub&gt;" vertex="1">
+          <mxGeometry height="260" width="220" x="710" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="e_env_actor" edge="1" parent="1" source="env" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;strokeColor=#3B4256;endArrow=block;endFill=1;fontSize=13;fontStyle=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;labelBackgroundColor=#FFFFFF;" target="actor" value="s&lt;sub&gt;t&lt;/sub&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="180" y="45" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_env_disc" edge="1" parent="1" source="env" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;strokeColor=#432D57;endArrow=block;endFill=1;fontSize=13;fontStyle=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;labelBackgroundColor=#FFFFFF;fillColor=#76608a;" target="disc" value="s&lt;sub&gt;t&lt;/sub&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="820" y="45" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_actor_motor" edge="1" parent="1" source="actor" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;strokeColor=#7E5A9B;endArrow=block;endFill=1;fontSize=13;fontStyle=1;labelBackgroundColor=#F8F9FB;" target="motor" value="a&lt;sub&gt;t&lt;/sub&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_motor_env" edge="1" parent="1" source="motor" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;strokeColor=#7E5A9B;endArrow=block;endFill=1;fontSize=13;fontStyle=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;labelBackgroundColor=#FFFFFF;" target="env" value="a&lt;sub&gt;t&lt;/sub&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_motor_disc" edge="1" parent="1" source="motor" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;strokeColor=#7E5A9B;endArrow=block;endFill=1;fontSize=13;fontStyle=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.17;entryDx=0;entryDy=0;labelBackgroundColor=#F8F9FB;" target="disc" value="a&lt;sub&gt;t&lt;/sub&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_disc_reward" edge="1" parent="1" source="disc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;strokeColor=#432D57;endArrow=block;endFill=1;fontSize=13;fontStyle=1;exitX=0;exitY=0.83;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;labelBackgroundColor=#F8F9FB;fillColor=#76608a;" target="reward" value="r&lt;sub&gt;i&lt;/sub&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_reward_critic" edge="1" parent="1" source="reward" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;strokeColor=#432D57;endArrow=block;endFill=1;fontSize=13;fontStyle=1;labelBackgroundColor=#F8F9FB;fillColor=#76608a;" target="critic" value="r&lt;sub&gt;t&lt;/sub&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_critic_actor" edge="1" parent="1" source="critic" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;strokeColor=#432D57;endArrow=block;endFill=1;fontSize=13;fontStyle=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;labelBackgroundColor=#F8F9FB;fillColor=#76608a;" target="actor" value="Ventaja A&lt;sub&gt;t&lt;/sub&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="note" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#4F8A4B;fontStyle=2;" value="A&lt;sub&gt;t&lt;/sub&gt; = r&lt;sub&gt;t&lt;/sub&gt; + γV(s&lt;sub&gt;t+1&lt;/sub&gt;) − V(s&lt;sub&gt;t&lt;/sub&gt;)" vertex="1">
+          <mxGeometry height="30" width="240" x="60" y="460" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

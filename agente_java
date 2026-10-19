@@ -1,0 +1,32 @@
+// Interfaz de comunicación entre el Juego RobotPVP y el Modelo
+import org.pytorch.IValue;
+import org.pytorch.LiteModuleLoader;
+import org.pytorch.Module;
+import org.pytorch.Tensor;
+
+public class AgenteIA {
+    private Module modelo;
+
+    public AgenteIA(String pathModeloPtl) {
+        // Carga el archivo modelo_entrenado.ptl generado en Python
+        modelo = LiteModuleLoader.load(pathModeloPtl);
+    }
+
+    public int obtenerMejorAccion(float robotX, float robotY, float rivalX, float rivalY) {
+        // 1. Preparar el estado (s_t)
+        float[] estado = {robotX / 100f, robotY / 100f, rivalX / 100f, rivalY / 100f};
+        Tensor tensorEstado = Tensor.fromBlob(estado, new long[]{1, 4});
+
+        // 2. Comunicar estado al Actor
+        IValue[] salida = modelo.forward(IValue.from(tensorEstado)).toTuple();
+        float[] politicas = salida[0].toTensor().getDataAsFloatArray();
+
+        // 3. Tomar decisión
+        int accion = 0;
+        float maxProb = politicas[0];
+        for (int i = 1; i < politicas.length; i++) {
+            if (politicas[i] > maxProb) { maxProb = politicas[i]; accion = i; }
+        }
+        return accion; // Retorna 0,1,2,3 al juego para que mueva al sprite
+    }
+}
