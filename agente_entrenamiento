@@ -1,0 +1,114 @@
+import torch
+import torch.optim as optim
+import torch.nn.functional as F
+from torch.distributions import Categorical
+import numpy as np
+import os
+from torch.utils.mobile_optimizer import optimize_for_mobile
+from actor_critic import AgenteActorCritic
+from descubrimiento import ComponenteDescubrimiento
+
+# Configuración
+STATE_DIM = 4  # [x_robot, y_robot, x_rival, y_rival]
+ACTION_DIM = 4 # [Arriba, Abajo, Izq, Der]
+MAX_EPISODES = 1500
+ETA = 0.5 # Factor de descubrimiento
+
+# Simulador de RobotPVP para Python
+class EntornoProxyPVP:
+    def reset(self):
+        self.robot_pos = np.random.rand(2) * 10.0
+        self.rival_pos = np.random.rand(2) * 10.0
+        self.steps = 0
+        return self._get_state()
+        
+    def _get_state(self):
+        state = np.concatenate([self.robot_pos, self.rival_pos]) / 10.0
+        return torch.tensor(state, dtype=torch.float32)
+
+    def step(self, action):
+        self.steps += 1
+        moves = np.array([[0, 1], [0, -1], [-1, 0], [1, 0]])
+        self.robot_pos += moves[action] * 0.5 
+        self.robot_pos = np.clip(self.robot_pos, 0, 10.0)
+        
+        dist = np.linalg.norm(self.robot_pos - self.rival_pos)
+        reward_ext = 10.0 if dist < 1.0 else -0.1
+        done = dist < 1.0 or self.steps > 100
+        
+        return self._get_state(), reward_ext, done
+
+def entrenar_agente():
+    env = EntornoProxyPVP()
+    actor_critic = AgenteActorCritic(STATE_DIM, ACTION_DIM)
+    descubrimiento = ComponenteDescubrimiento(STATE_DIM, ACTION_DIM)
+    
+    opt_ac = optim.Adam(actor_critic.parameters(), lr=1e-3)
+    opt_disc = optim.Adam(descubrimiento.parameters(), lr=1e-3)
+
+    print("Iniciando entrenamiento...")
+    for episodio in range(MAX_EPISODES):
+        state = env.reset()
+        done = False
+        log_probs, values, rewards = [], [], []
+
+        while not done:
+            policy, value = actor_critic(state)
+            dist = Categorical(policy)
+            action = dist.sample()
+            
+            next_state, reward_ext, done = env.step(action.item())
+
+            # COMPONENTE DE DESCUBRIMIENTO
+            action_one_hot = F.one_hot(action, num_classes=ACTION_DIM).float()
+            _, phi_next_pred = descubrimiento(state, action_one_hot)
+            phi_next_real = descubrimiento.encoder(next_state).detach()
+            
+            # Recompensa intrínseca (Error de predicción)
+            reward_int = F.mse_loss(phi_next_pred, phi_next_real).item()
+            total_reward = reward_ext + (ETA * reward_int)
+
+            # Actualizar módulo de descubrimiento
+            loss_disc = F.mse_loss(phi_next_pred, phi_next_real)
+            opt_disc.zero_grad()
+            loss_disc.backward()
+            opt_disc.step()
+
+            log_probs.append(dist.log_prob(action))
+            values.append(value)
+            rewards.append(total_reward)
+            state = next_state
+
+        # Actualizar Actor-Critic al final del episodio
+        G = 0
+        returns = []
+        for r in reversed(rewards):
+            G = r + 0.99 * G
+            returns.insert(0, G)
+        returns = torch.tensor(returns)
+        returns = (returns - returns.mean()) / (returns.std() + 1e-9)
+
+        loss_ac = 0
+        for log_prob, value, G_ret in zip(log_probs, values, returns):
+            advantage = G_ret - value.item()
+            loss_ac += (-log_prob * advantage) + F.smooth_l1_loss(value, torch.tensor([G_ret]))
+
+        opt_ac.zero_grad()
+        loss_ac.backward()
+        opt_ac.step()
+
+        if (episodio + 1) % 100 == 0:
+            print(f"Episodio: {episodio+1} | Recompensa: {sum(rewards):.2f}")
+
+    # GUARDAR EL MODELO PARA ANDROID (Responde a la duda de la interfaz)
+    actor_critic.eval()
+    ejemplo_estado = torch.rand(1, STATE_DIM)
+    modulo_trazado = torch.jit.trace(actor_critic, ejemplo_estado)
+    modulo_optimizado = optimize_for_mobile(modulo_trazado)
+    
+    os.makedirs("../modelos", exist_ok=True)
+    modulo_optimizado._save_for_lite_interpreter("../modelos/modelo_entrenado.ptl")
+    print("Modelo guardado exitosamente en /modelos/modelo_entrenado.ptl")
+
+if __name__ == "__main__":
+    entrenar_agente()
