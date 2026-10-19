@@ -1,0 +1,20 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class AgenteActorCritic(nn.Module):
+    def __init__(self, state_dim, action_dim):
+        super(AgenteActorCritic, self).__init__()
+        self.shared = nn.Sequential(
+            nn.Linear(state_dim, 64),
+            nn.ReLU()
+        )
+        self.actor = nn.Linear(64, action_dim)
+        self.critic = nn.Linear(64, 1)
+
+    def forward(self, state):
+        x = self.shared(state)
+        # Se usa softmax para que en Android sea fácil obtener la probabilidad de la acción
+        policy = F.softmax(self.actor(x), dim=-1)
+        value = self.critic(x)
+        return policy, value
